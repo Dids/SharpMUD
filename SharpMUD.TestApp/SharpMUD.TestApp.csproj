@@ -4,15 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{96FB9D1F-B645-4BF6-A0F2-74817AB1DDED}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{E71BB37E-3458-4070-AEDF-AE7E0037C07E}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SharpMUD</RootNamespace>
-    <AssemblyName>SharpMUD</AssemblyName>
+    <RootNamespace>SharpMUD.TestApp</RootNamespace>
+    <AssemblyName>SharpMUD.TestApp</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -30,10 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,30 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountData.cs" />
-    <Compile Include="API\Common.cs" />
-    <Compile Include="API\Methods.cs" />
-    <Compile Include="API\Requester.cs" />
-    <Compile Include="Channel.cs" />
-    <Compile Include="ChatElement.cs" />
-    <Compile Include="Events\AccountDataEventArgs.cs" />
-    <Compile Include="Events\AuthenticationEventArgs.cs" />
-    <Compile Include="Events\ChatHistoryEventArgs.cs" />
-    <Compile Include="Events\ErrorEventArgs.cs" />
-    <Compile Include="Events\MessageEventArgs.cs" />
-    <Compile Include="Events\PresenceEventArgs.cs" />
-    <Compile Include="Exceptions\RequestException.cs" />
-    <Compile Include="Message.cs" />
-    <Compile Include="ChatHistory.cs" />
-    <Compile Include="Presence.cs" />
-    <Compile Include="User.cs" />
-    <Compile Include="Client.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SharpMUD\SharpMUD.csproj">
+      <Project>{96FB9D1F-B645-4BF6-A0F2-74817AB1DDED}</Project>
+      <Name>SharpMUD</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
