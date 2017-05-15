@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SharpMUD
 {
@@ -15,6 +16,18 @@ namespace SharpMUD
             Channels = new List<Channel>();
 
             Update = true;
+        }
+
+        public Channel FindChannel(string name)
+        {
+            try
+            {
+                return Channels.First(x => x.Name == name);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

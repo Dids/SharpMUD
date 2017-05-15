@@ -4,6 +4,7 @@ using SharpMUD.API;
 using SharpMUD.Events;
 using SharpMUD.Exceptions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 
@@ -16,6 +17,7 @@ namespace SharpMUD
         private int PollingInterval { get; set; }
         private double LastPollTime { get; set; }
         private Timer PollingTimer { get; set; }
+        private List<string> RelayedIDs { get; set; }
 
         public string Password { get; set; }
         public string Token { get; private set; }
@@ -46,9 +48,12 @@ namespace SharpMUD
         public Client()
         {
             PollingInterval = 800;
+            LastPollTime = Utilities.GetTime();
+
             PollingTimer = new Timer(PollingInterval);
             PollingTimer.Elapsed += PollingTimer_Elapsed;
-            LastPollTime = -1;
+
+            RelayedIDs = new List<string>();
         }
 
         public Client(string token) : this()
@@ -75,6 +80,7 @@ namespace SharpMUD
                 var token = obj["chat_token"].ToString();
                 var eventArgs = new AuthenticationEventArgs(token);
 
+                Token = token;
                 Authenticated?.Invoke(this, eventArgs);
                 return token;
             }
@@ -256,7 +262,7 @@ namespace SharpMUD
             var jObject = new JObject();
             jObject["chat_token"] = Token;
             jObject["usernames"] = JArray.FromObject(AccountData.Users.Where(x => x.Update).Select(x => x.Name).ToArray());
-            jObject["after"] = LastPollTime + 0.01;
+            jObject["after"] = LastPollTime + 0.005;
 
             try
             {
@@ -312,18 +318,52 @@ namespace SharpMUD
                     if(element is Presence)
                     {
                         var pres = element as Presence;
+                        var channel = AccountData.FindUser(pres.To).FindChannel(pres.Channel);
 
-                        if(!pres.Joined)
-                            AccountData.Users.First(x => x.Name == pres.To).Channels.First(x => x.Name == pres.Channel).Members.Remove(pres.From);
-                        else
-                            AccountData.Users.First(x => x.Name == pres.To).Channels.First(x => x.Name == pres.Channel).Members.Add(pres.From);
-
+                        if(channel != null)
+                        {
+                            if(!pres.Joined)
+                            {
+                                if(channel.MemberExists(pres.From))
+                                {
+                                    channel.Members.Remove(pres.From);
+                                }
+                            }
+                            else
+                            {
+                                if(!channel.MemberExists(pres.From))
+                                {
+                                    channel.Members.Add(pres.From);
+                                }
+                            }
+                        }
                         PresenceReceived?.Invoke(this, new PresenceEventArgs(pres));
+                        continue;
                     }
                     else if(element is Message)
                     {
                         if(element.From != element.To)
-                            MessageReceived?.Invoke(this, new MessageEventArgs(element as Message));
+                        {
+                            if(!RelayedIDs.Contains(element.ID))
+                            {
+                                RelayedIDs.Add(element.ID);
+                                MessageReceived?.Invoke(this, new MessageEventArgs(element as Message));
+                            }
+                        }
+                        else
+                        {
+                            if(!RelayedIDs.Contains(element.ID))
+                            {
+                                RelayedIDs.Add(element.ID);
+                                MessageSent?.Invoke(this, new MessageEventArgs(element as Message));
+                            }
+                        }
+
+
+                        if(RelayedIDs.Count > 100)
+                        {
+                            RelayedIDs.Clear();
+                        }
                     }
                 }         
             }

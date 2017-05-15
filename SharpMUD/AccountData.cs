@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SharpMUD
 {
@@ -9,6 +10,18 @@ namespace SharpMUD
         public AccountData()
         {
             Users = new List<User>();
+        }
+
+        public User FindUser(string name)
+        {
+            try
+            {
+                return Users.First(x => x.Name == name);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

@@ -6,7 +6,7 @@ namespace SharpMUD.TestApp
     {
         static void Main(string[] args)
         {
-            var client = new Client();
+            var client = new Client(/*token here*/);
             client.ChatHistoryReceived += Client_ChatHistoryReceived;
             client.MessageReceived += Client_MessageReceived;
             client.MessageSent += Client_MessageSent;
@@ -19,7 +19,6 @@ namespace SharpMUD.TestApp
             }
             client.RequestMessageHistory();
             client.StartPolling();
-            client.SendMessage("0000", "Does this even work?");
 
             while(true) { }
         }
