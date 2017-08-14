@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace SharpMUD.TestApp
 {
@@ -18,9 +19,9 @@ namespace SharpMUD.TestApp
                     user.Update = false;
             }
             client.RequestMessageHistory();
-            client.StartPolling();
 
-            while(true) { }
+            Thread PollThread = new Thread(() => client.StartPolling(500));
+            PollThread.Start();
         }
 
         private static void Client_MessageSent(object sender, Events.MessageEventArgs e)
