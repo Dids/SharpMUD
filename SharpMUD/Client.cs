@@ -6,7 +6,7 @@ using SharpMUD.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Timers;
+using System.Threading;
 
 namespace SharpMUD
 {
@@ -16,7 +16,6 @@ namespace SharpMUD
 
         private int PollingInterval { get; set; }
         private double LastPollTime { get; set; }
-        private Timer PollingTimer { get; set; }
         private List<string> RelayedIDs { get; set; }
 
         public string Password { get; set; }
@@ -49,9 +48,6 @@ namespace SharpMUD
         {
             PollingInterval = 800;
             LastPollTime = Utilities.GetTime();
-
-            PollingTimer = new Timer(PollingInterval);
-            PollingTimer.Elapsed += PollingTimer_Elapsed;
 
             RelayedIDs = new List<string>();
         }
@@ -196,7 +192,7 @@ namespace SharpMUD
             }
         }
 
-        public void StartPolling()
+        public void StartPolling(int ms)
         {
             if(!IsAuthenticated)
                 throw new InvalidOperationException("Not authenticated. Request/set token first.");
@@ -204,7 +200,11 @@ namespace SharpMUD
             if(AccountData == null)
                 throw new InvalidOperationException("No account data requested. Request account data first.");
 
-            PollingTimer.Start();
+            while(true)
+            {
+                Poll();
+                Thread.Sleep(ms);
+            }
         }
 
         public void SendMessage(string channel, string message)
@@ -371,11 +371,6 @@ namespace SharpMUD
             {
                 ErrorOccured?.Invoke(this, new ErrorEventArgs(e));
             }
-        }
-
-        private void PollingTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            Poll();
         }
     }
 }
